@@ -1,3 +1,4 @@
+using dWeb2024;
 using dWeb2024.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,16 @@ else
     app.UseHsts();
 }
 
+// startup ainda é executado
+var startup = new Startup(builder.Configuration);
+startup.ConfigureServices(builder.Services);
+
+app.UseCors(x => x
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
+                .AllowCredentials()); // allow credentials
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -42,3 +53,5 @@ app.MapRazorPages();
 
 app.UseCors("AllowAllOrigins");
 app.Run();
+
+

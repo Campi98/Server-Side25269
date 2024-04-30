@@ -18,17 +18,17 @@ namespace dWeb2024.Controllers.API
     }
 
 
-    [HttpPost]
-    [Route("fileSubmit")]
-    public IActionResult FileSubmit([FromForm] FileSubmitModel fileSubmitModel)
-    {
-        IFormFile formFileformFile = _autService.GetFile();
+    //[HttpPost]
+    //[Route("fileSubmit")]
+    //public IActionResult FileSubmit([FromForm] FileSubmitModel fileSubmitModel)
+    //{
+    //    IFormFile formFileformFile = _autService.GetFile();
 
-        if (formFile == null)
-        {
-            return BadRequest("File not found");
-        }
-        return Ok("File submitted");
-    }
+    //    if (formFile == null)
+    //    {
+    //        return BadRequest("File not found");
+    //    }
+    //    return Ok("File submitted");
+    //}
 
 }
