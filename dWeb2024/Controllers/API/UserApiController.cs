@@ -8,13 +8,23 @@ namespace dWeb2024.Controllers.API
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors(origins: "https://localhost:3000/", headers:"*", methods:"*")]
-    public class FirstAPI : ControllerBase
+    public class UserApiController : ControllerBase
     {
+        [Route("[action]")]
         [HttpGet]
         public IActionResult GetUsers()
         {
             return Ok("oi");
         }
+
+        [Route("Login")]
+        [HttpGet]
+        public IActionResult LoginUser()
+        {
+            return Ok("oi");
+        }
+
+
     }
 
 
