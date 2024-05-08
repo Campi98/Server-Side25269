@@ -24,7 +24,6 @@ namespace dWeb2024.Controllers.API
             return Ok("oi");
         }
 
-
     }
 
 
