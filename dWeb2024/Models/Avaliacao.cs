@@ -13,6 +13,7 @@ namespace dWeb2024.Models
         public int Id_do_Avaliador { get; set; }
         public int Id_do_Avaliado { get; set; }
 
+        [Display(Name = "classificação")]
         public int Classificacao { get; set; }
 
         public string Comentario { get; set; }

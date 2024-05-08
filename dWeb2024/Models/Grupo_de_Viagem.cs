@@ -21,6 +21,7 @@ namespace dWeb2024.Models
 
         public DateTime Data_de_Fim { get; set; }
 
+        [Display(Name = "Descrição")]
         public string Descricao { get; set; }
     }
 }
