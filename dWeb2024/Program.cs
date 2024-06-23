@@ -29,10 +29,6 @@ else
     app.UseHsts();
 }
 
-// startup ainda é executado
-var startup = new Startup(builder.Configuration);
-startup.ConfigureServices(builder.Services);
-
 app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
