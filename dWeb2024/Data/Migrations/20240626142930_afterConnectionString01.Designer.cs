@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dWeb2024.Data;
 
@@ -11,9 +12,11 @@ using dWeb2024.Data;
 namespace dWeb2024.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240626142930_afterConnectionString01")]
+    partial class afterConnectionString01
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -395,24 +398,6 @@ namespace dWeb2024.Data.Migrations
                     b.HasKey("Id_do_User");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id_do_User = 1,
-                            Email = "admin@example.com",
-                            Nome = "Admin",
-                            Senha = "admin123",
-                            Tipo = "Admin"
-                        },
-                        new
-                        {
-                            Id_do_User = 2,
-                            Email = "user1@example.com",
-                            Nome = "User1",
-                            Senha = "user123",
-                            Tipo = "User"
-                        });
                 });
 
             modelBuilder.Entity("dWeb2024.Models.Viagem", b =>
@@ -458,34 +443,6 @@ namespace dWeb2024.Data.Migrations
                     b.HasKey("Id_da_Viagem");
 
                     b.ToTable("Viagens");
-
-                    b.HasData(
-                        new
-                        {
-                            Id_da_Viagem = 1,
-                            Data_de_Fim = new DateTime(2024, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Data_de_Inicio = new DateTime(2023, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Descricao = "Visita a Paris durante o Natal",
-                            Destino = "Paris",
-                            Dicas_e_Recomendacoes = "Levar roupas quentes",
-                            Fotografia_relacionada_com_a_viagem = "paris.jpg",
-                            Id_do_Grupo_de_Viagem = 1,
-                            Itenerario = "Dia 1: Chegada; Dia 2: Torre Eiffel; ...",
-                            Rating_de_Viagem = 4.5f
-                        },
-                        new
-                        {
-                            Id_da_Viagem = 2,
-                            Data_de_Fim = new DateTime(2024, 1, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Data_de_Inicio = new DateTime(2023, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Descricao = "Ano Novo em Lisboa",
-                            Destino = "Lisboa",
-                            Dicas_e_Recomendacoes = "Ver os fogos na Torre de Belém",
-                            Fotografia_relacionada_com_a_viagem = "lisboa.jpg",
-                            Id_do_Grupo_de_Viagem = 2,
-                            Itenerario = "Dia 1: Chegada; Dia 2: Baixa de Lisboa; ...",
-                            Rating_de_Viagem = 4.8f
-                        });
                 });
 
             modelBuilder.Entity("MensagemUsers", b =>
