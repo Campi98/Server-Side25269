@@ -1,16 +1,16 @@
-﻿using System;
+﻿using dWeb2024.Data;
+using dWeb2024.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using dWeb2024.Data;
-using dWeb2024.Models;
 
 namespace dWeb2024.Controllers
 {
-    public class ViagensController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ViagensController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
@@ -19,134 +19,91 @@ namespace dWeb2024.Controllers
             _context = context;
         }
 
-        // GET: Viagens
-        public async Task<IActionResult> Index()
+        // GET: api/Viagens
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Viagem>>> GetViagens()
         {
-            return View(await _context.Viagens.ToListAsync());
+            return await _context.Viagens.ToListAsync();
         }
 
-        // GET: Viagens/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Viagens/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Viagem>> GetViagem(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var viagem = await _context.Viagens
-                .FirstOrDefaultAsync(m => m.Id_da_Viagem == id);
-            if (viagem == null)
-            {
-                return NotFound();
-            }
-
-            return View(viagem);
-        }
-
-        // GET: Viagens/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Viagens/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id_da_Viagem,Id_do_Grupo_de_Viagem,Fotografia_relacionada_com_a_viagem,Destino,Data_de_Inicio,Data_de_Fim,Descricao,Itenerario,Dicas_e_Recomendacoes,Rating_de_Viagem")] Viagem viagem)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(viagem);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(viagem);
-        }
-
-        // GET: Viagens/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var viagem = await _context.Viagens.FindAsync(id);
+
             if (viagem == null)
             {
                 return NotFound();
             }
-            return View(viagem);
+
+            return viagem;
         }
 
-        // POST: Viagens/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: api/Viagens
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id_da_Viagem,Id_do_Grupo_de_Viagem,Fotografia_relacionada_com_a_viagem,Destino,Data_de_Inicio,Data_de_Fim,Descricao,Itenerario,Dicas_e_Recomendacoes,Rating_de_Viagem")] Viagem viagem)
+        public async Task<ActionResult<Viagem>> PostViagem([FromBody] Viagem viagem)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _context.Viagens.Add(viagem);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetViagem), new { id = viagem.Id_da_Viagem }, viagem);
+        }
+
+        // PUT: api/Viagens/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutViagem(int id, [FromBody] Viagem viagem)
         {
             if (id != viagem.Id_da_Viagem)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(viagem);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ViagemExists(viagem.Id_da_Viagem))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return BadRequest(ModelState);
             }
-            return View(viagem);
+
+            _context.Entry(viagem).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ViagemExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: Viagens/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // DELETE: api/Viagens/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteViagem(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var viagem = await _context.Viagens
-                .FirstOrDefaultAsync(m => m.Id_da_Viagem == id);
+            var viagem = await _context.Viagens.FindAsync(id);
             if (viagem == null)
             {
                 return NotFound();
             }
 
-            return View(viagem);
-        }
-
-        // POST: Viagens/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var viagem = await _context.Viagens.FindAsync(id);
-            if (viagem != null)
-            {
-                _context.Viagens.Remove(viagem);
-            }
-
+            _context.Viagens.Remove(viagem);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool ViagemExists(int id)

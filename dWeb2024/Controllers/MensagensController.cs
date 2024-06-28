@@ -1,16 +1,16 @@
-﻿using System;
+﻿using dWeb2024.Data;
+using dWeb2024.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using dWeb2024.Data;
-using dWeb2024.Models;
 
 namespace dWeb2024.Controllers
 {
-    public class MensagensController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class MensagensController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
@@ -19,134 +19,91 @@ namespace dWeb2024.Controllers
             _context = context;
         }
 
-        // GET: Mensagens
-        public async Task<IActionResult> Index()
+        // GET: api/Mensagens
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Mensagem>>> GetMensagens()
         {
-            return View(await _context.Mensagens.ToListAsync());
+            return await _context.Mensagens.ToListAsync();
         }
 
-        // GET: Mensagens/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Mensagens/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Mensagem>> GetMensagem(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var mensagem = await _context.Mensagens
-                .FirstOrDefaultAsync(m => m.Id_da_Mensagem == id);
-            if (mensagem == null)
-            {
-                return NotFound();
-            }
-
-            return View(mensagem);
-        }
-
-        // GET: Mensagens/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Mensagens/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id_da_Mensagem,Id_do_Remetente,Id_do_Destinatario,Conteudo,Data_e_Hora,Fotografia_do_User")] Mensagem mensagem)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(mensagem);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(mensagem);
-        }
-
-        // GET: Mensagens/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var mensagem = await _context.Mensagens.FindAsync(id);
+
             if (mensagem == null)
             {
                 return NotFound();
             }
-            return View(mensagem);
+
+            return mensagem;
         }
 
-        // POST: Mensagens/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: api/Mensagens
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id_da_Mensagem,Id_do_Remetente,Id_do_Destinatario,Conteudo,Data_e_Hora,Fotografia_do_User")] Mensagem mensagem)
+        public async Task<ActionResult<Mensagem>> PostMensagem([FromBody] Mensagem mensagem)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _context.Mensagens.Add(mensagem);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetMensagem), new { id = mensagem.Id_da_Mensagem }, mensagem);
+        }
+
+        // PUT: api/Mensagens/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutMensagem(int id, [FromBody] Mensagem mensagem)
         {
             if (id != mensagem.Id_da_Mensagem)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(mensagem);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!MensagemExists(mensagem.Id_da_Mensagem))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return BadRequest(ModelState);
             }
-            return View(mensagem);
+
+            _context.Entry(mensagem).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MensagemExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: Mensagens/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // DELETE: api/Mensagens/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMensagem(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var mensagem = await _context.Mensagens
-                .FirstOrDefaultAsync(m => m.Id_da_Mensagem == id);
+            var mensagem = await _context.Mensagens.FindAsync(id);
             if (mensagem == null)
             {
                 return NotFound();
             }
 
-            return View(mensagem);
-        }
-
-        // POST: Mensagens/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var mensagem = await _context.Mensagens.FindAsync(id);
-            if (mensagem != null)
-            {
-                _context.Mensagens.Remove(mensagem);
-            }
-
+            _context.Mensagens.Remove(mensagem);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool MensagemExists(int id)

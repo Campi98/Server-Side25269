@@ -1,152 +1,109 @@
-﻿using System;
+﻿using dWeb2024.Data;
+using dWeb2024.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using dWeb2024.Data;
-using dWeb2024.Models;
 
 namespace dWeb2024.Controllers
 {
-    public class AvaliacaoController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AvaliacoesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public AvaliacaoController(ApplicationDbContext context)
+        public AvaliacoesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Avaliacao
-        public async Task<IActionResult> Index()
+        // GET: api/Avaliacoes
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Avaliacao>>> GetAvaliacoes()
         {
-            return View(await _context.Avaliacoes.ToListAsync());
+            return await _context.Avaliacoes.ToListAsync();
         }
 
-        // GET: Avaliacao/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Avaliacoes/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Avaliacao>> GetAvaliacao(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var avaliacao = await _context.Avaliacoes
-                .FirstOrDefaultAsync(m => m.Id_da_Avaliacao == id);
-            if (avaliacao == null)
-            {
-                return NotFound();
-            }
-
-            return View(avaliacao);
-        }
-
-        // GET: Avaliacao/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Avaliacao/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id_da_Avaliacao,Id_do_Avaliador,Id_do_Avaliado,Classificacao,Comentario,Data")] Avaliacao avaliacao)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(avaliacao);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(avaliacao);
-        }
-
-        // GET: Avaliacao/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var avaliacao = await _context.Avaliacoes.FindAsync(id);
+
             if (avaliacao == null)
             {
                 return NotFound();
             }
-            return View(avaliacao);
+
+            return avaliacao;
         }
 
-        // POST: Avaliacao/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: api/Avaliacoes
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id_da_Avaliacao,Id_do_Avaliador,Id_do_Avaliado,Classificacao,Comentario,Data")] Avaliacao avaliacao)
+        public async Task<ActionResult<Avaliacao>> PostAvaliacao([FromBody] Avaliacao avaliacao)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _context.Avaliacoes.Add(avaliacao);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetAvaliacao), new { id = avaliacao.Id_da_Avaliacao }, avaliacao);
+        }
+
+        // PUT: api/Avaliacoes/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutAvaliacao(int id, [FromBody] Avaliacao avaliacao)
         {
             if (id != avaliacao.Id_da_Avaliacao)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(avaliacao);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AvaliacaoExists(avaliacao.Id_da_Avaliacao))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return BadRequest(ModelState);
             }
-            return View(avaliacao);
+
+            _context.Entry(avaliacao).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!AvaliacaoExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: Avaliacao/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // DELETE: api/Avaliacoes/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAvaliacao(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var avaliacao = await _context.Avaliacoes
-                .FirstOrDefaultAsync(m => m.Id_da_Avaliacao == id);
+            var avaliacao = await _context.Avaliacoes.FindAsync(id);
             if (avaliacao == null)
             {
                 return NotFound();
             }
 
-            return View(avaliacao);
-        }
-
-        // POST: Avaliacao/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var avaliacao = await _context.Avaliacoes.FindAsync(id);
-            if (avaliacao != null)
-            {
-                _context.Avaliacoes.Remove(avaliacao);
-            }
-
+            _context.Avaliacoes.Remove(avaliacao);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool AvaliacaoExists(int id)

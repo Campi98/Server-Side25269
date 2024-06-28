@@ -1,16 +1,16 @@
-﻿using System;
+﻿using dWeb2024.Data;
+using dWeb2024.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using dWeb2024.Data;
-using dWeb2024.Models;
 
 namespace dWeb2024.Controllers
 {
-    public class PerfisController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PerfisController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
@@ -19,134 +19,91 @@ namespace dWeb2024.Controllers
             _context = context;
         }
 
-        // GET: Perfis
-        public async Task<IActionResult> Index()
+        // GET: api/Perfis
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Perfil>>> GetPerfis()
         {
-            return View(await _context.Perfis.ToListAsync());
+            return await _context.Perfis.ToListAsync();
         }
 
-        // GET: Perfis/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Perfis/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Perfil>> GetPerfil(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var perfil = await _context.Perfis
-                .FirstOrDefaultAsync(m => m.Id_do_Perfil == id);
-            if (perfil == null)
-            {
-                return NotFound();
-            }
-
-            return View(perfil);
-        }
-
-        // GET: Perfis/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Perfis/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id_do_Perfil,Id_do_User,Fotografia_do_User,Interesses_de_Viagem,Destinos_Favoritos,Nivel_de_Experiencia_em_Viagens")] Perfil perfil)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(perfil);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(perfil);
-        }
-
-        // GET: Perfis/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var perfil = await _context.Perfis.FindAsync(id);
+
             if (perfil == null)
             {
                 return NotFound();
             }
-            return View(perfil);
+
+            return perfil;
         }
 
-        // POST: Perfis/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: api/Perfis
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id_do_Perfil,Id_do_User,Fotografia_do_User,Interesses_de_Viagem,Destinos_Favoritos,Nivel_de_Experiencia_em_Viagens")] Perfil perfil)
+        public async Task<ActionResult<Perfil>> PostPerfil([FromBody] Perfil perfil)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _context.Perfis.Add(perfil);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetPerfil), new { id = perfil.Id_do_Perfil }, perfil);
+        }
+
+        // PUT: api/Perfis/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutPerfil(int id, [FromBody] Perfil perfil)
         {
             if (id != perfil.Id_do_Perfil)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(perfil);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PerfilExists(perfil.Id_do_Perfil))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return BadRequest(ModelState);
             }
-            return View(perfil);
+
+            _context.Entry(perfil).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PerfilExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: Perfis/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // DELETE: api/Perfis/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePerfil(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var perfil = await _context.Perfis
-                .FirstOrDefaultAsync(m => m.Id_do_Perfil == id);
+            var perfil = await _context.Perfis.FindAsync(id);
             if (perfil == null)
             {
                 return NotFound();
             }
 
-            return View(perfil);
-        }
-
-        // POST: Perfis/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var perfil = await _context.Perfis.FindAsync(id);
-            if (perfil != null)
-            {
-                _context.Perfis.Remove(perfil);
-            }
-
+            _context.Perfis.Remove(perfil);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool PerfilExists(int id)
