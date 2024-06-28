@@ -3,6 +3,7 @@ using dWeb2024.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace dWeb2024.Controllers.API
 {
@@ -42,6 +43,11 @@ namespace dWeb2024.Controllers.API
         [HttpPost("users")]
         public async Task<ActionResult<Users>> PostUser(Users user)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -55,6 +61,11 @@ namespace dWeb2024.Controllers.API
             if (id != user.Id_do_User)
             {
                 return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
             }
 
             _context.Entry(user).State = EntityState.Modified;
@@ -97,6 +108,16 @@ namespace dWeb2024.Controllers.API
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.Id_do_User == id);
+        }
+
+        // Método auxiliar para validar o modelo
+        private void ValidateModel()
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                throw new ValidationException(string.Join("; ", errors));
+            }
         }
 
         // ############################################################################################################
@@ -268,5 +289,174 @@ namespace dWeb2024.Controllers.API
             return _context.Avaliacoes.Any(e => e.Id_da_Avaliacao == id);
         }
 
+
+        // ############################################################################################################
+
+        // GET: api/FirstAPI/grupos_de_viagem
+        [HttpGet("grupos_de_viagem")]
+        public async Task<ActionResult<IEnumerable<Grupo_de_Viagem>>> GetGruposDeViagem()
+        {
+            return await _context.GruposDeViagem.ToListAsync();
+        }
+
+        // GET: api/FirstAPI/grupos_de_viagem/5
+        [HttpGet("grupos_de_viagem/{id}")]
+        public async Task<ActionResult<Grupo_de_Viagem>> GetGrupoDeViagem(int id)
+        {
+            var grupoDeViagem = await _context.GruposDeViagem.FindAsync(id);
+
+            if (grupoDeViagem == null)
+            {
+                return NotFound();
+            }
+
+            return grupoDeViagem;
+        }
+
+        // POST: api/FirstAPI/grupos_de_viagem
+        [HttpPost("grupos_de_viagem")]
+        public async Task<ActionResult<Grupo_de_Viagem>> PostGrupoDeViagem(Grupo_de_Viagem grupoDeViagem)
+        {
+            _context.GruposDeViagem.Add(grupoDeViagem);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetGrupoDeViagem", new { id = grupoDeViagem.Id_do_Grupo }, grupoDeViagem);
+        }
+
+        // PUT: api/FirstAPI/grupos_de_viagem/5
+        [HttpPut("grupos_de_viagem/{id}")]
+        public async Task<IActionResult> PutGrupoDeViagem(int id, Grupo_de_Viagem grupoDeViagem)
+        {
+            if (id != grupoDeViagem.Id_do_Grupo)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(grupoDeViagem).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!GrupoDeViagemExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // DELETE: api/FirstAPI/grupos_de_viagem/5
+        [HttpDelete("grupos_de_viagem/{id}")]
+        public async Task<IActionResult> DeleteGrupoDeViagem(int id)
+        {
+            var grupoDeViagem = await _context.GruposDeViagem.FindAsync(id);
+            if (grupoDeViagem == null)
+            {
+                return NotFound();
+            }
+
+            _context.GruposDeViagem.Remove(grupoDeViagem);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool GrupoDeViagemExists(int id)
+        {
+            return _context.GruposDeViagem.Any(e => e.Id_do_Grupo == id);
+        }
+
+
+        // ############################################################################################################
+
+        // GET: api/FirstAPI/mensagens
+        [HttpGet("mensagens")]
+        public async Task<ActionResult<IEnumerable<Mensagem>>> GetMensagens()
+        {
+            return await _context.Mensagens.ToListAsync();
+        }
+
+        // GET: api/FirstAPI/mensagens/5
+        [HttpGet("mensagens/{id}")]
+        public async Task<ActionResult<Mensagem>> GetMensagem(int id)
+        {
+            var mensagem = await _context.Mensagens.FindAsync(id);
+
+            if (mensagem == null)
+            {
+                return NotFound();
+            }
+
+            return mensagem;
+        }
+
+        // POST: api/FirstAPI/mensagens
+        [HttpPost("mensagens")]
+        public async Task<ActionResult<Mensagem>> PostMensagem(Mensagem mensagem)
+        {
+            _context.Mensagens.Add(mensagem);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetMensagem", new { id = mensagem.Id_da_Mensagem }, mensagem);
+        }
+
+        // PUT: api/FirstAPI/mensagens/5
+        [HttpPut("mensagens/{id}")]
+        public async Task<IActionResult> PutMensagem(int id, Mensagem mensagem)
+        {
+            if (id != mensagem.Id_da_Mensagem)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(mensagem).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!MensagemExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // DELETE: api/FirstAPI/mensagens/5
+        [HttpDelete("mensagens/{id}")]
+        public async Task<IActionResult> DeleteMensagem(int id)
+        {
+            var mensagem = await _context.Mensagens.FindAsync(id);
+            if (mensagem == null)
+            {
+                return NotFound();
+            }
+
+            _context.Mensagens.Remove(mensagem);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool MensagemExists(int id)
+        {
+            return _context.Mensagens.Any(e => e.Id_da_Mensagem == id);
+        }
     }
 }

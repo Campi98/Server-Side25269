@@ -15,12 +15,19 @@ namespace dWeb2024.Models
         [Key]
         public int Id_do_User { get; set; }
 
+        [Required(ErrorMessage = "Nome é obrigatório.")]
+        [StringLength(100, ErrorMessage = "Nome não pode ter mais que 100 caracteres.")]
         public string Nome { get; set; }
 
+        [Required(ErrorMessage = "Email é obrigatório.")]
+        [EmailAddress(ErrorMessage = "Email inválido.")]
         public string Email { get; set; }
 
+        [Required(ErrorMessage = "Senha é obrigatória.")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Senha deve ter entre 6 e 100 caracteres.")]
         public string Senha { get; set; }
 
+        [Required(ErrorMessage = "Tipo é obrigatório.")]
         public string Tipo { get; set; }
 
 
