@@ -17,6 +17,8 @@ namespace dWeb2024.Data
         public DbSet<Users> Users { get; set; }
         public DbSet<Viagem> Viagens { get; set; }
 
+        public DbSet<Imagem> Imagens { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
