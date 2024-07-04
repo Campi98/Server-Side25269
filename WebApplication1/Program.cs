@@ -32,9 +32,6 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader());
 });
 
-
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -62,22 +59,14 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseCors("AllowAll"); // Apply the CORS policy
 
-app.UseCors("AllowAll"); // Aplicar a política CORS
-
-
+app.UseAuthentication(); // Ensure authentication middleware is added
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
-
-
-
 // app.UseCors("AllowAllOrigins");
-
-
 app.Run();
-
-

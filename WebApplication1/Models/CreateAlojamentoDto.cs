@@ -8,5 +8,5 @@
     public DateTime DataDisponivel { get; set; }
     public string Proprietario { get; set; }
     public string TelefoneProprietario { get; set; }
-    public int Id_da_Viagem { get; set; }
+    public int ID_da_Viagem { get; set; }
 }
