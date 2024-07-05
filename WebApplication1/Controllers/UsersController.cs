@@ -1,21 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApplication1.Data;
 using WebApplication1.Models;
 
-namespace dWeb2024.Controllers
+namespace WebApplication1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Users
@@ -48,6 +51,26 @@ namespace dWeb2024.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Create a new IdentityUser
+            var identityUser = new IdentityUser
+            {
+                UserName = createUserDto.Email,
+                Email = createUserDto.Email
+            };
+
+            // Create the user with the UserManager
+            var result = await _userManager.CreateAsync(identityUser, createUserDto.Senha);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return BadRequest(ModelState);
+            }
+
+            // Create and save the application-specific user details
             var user = new User
             {
                 Nome = createUserDto.Nome,
