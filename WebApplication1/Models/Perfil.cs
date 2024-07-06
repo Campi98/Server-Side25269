@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace WebApplication1.Models
 {
@@ -15,6 +16,7 @@ namespace WebApplication1.Models
         public string Destinos_Favoritos { get; set; }
         public string Nivel_de_Experiencia_em_Viagens { get; set; }
 
+        [JsonIgnore]
         public User User { get; set; }
     }
 }

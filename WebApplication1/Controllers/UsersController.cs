@@ -83,6 +83,19 @@ namespace WebApplication1.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            // Create and save the perfil details
+            var perfil = new Perfil
+            {
+                ID_do_User = user.ID_do_User,
+                Fotografia_do_User = string.Empty,  // Initialize with empty or default values
+                Interesses_de_Viagem = string.Empty,
+                Destinos_Favoritos = string.Empty,
+                Nivel_de_Experiencia_em_Viagens = string.Empty
+            };
+
+            _context.Perfis.Add(perfil);
+            await _context.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetUser), new { id = user.ID_do_User }, user);
         }
 
@@ -153,12 +166,28 @@ namespace WebApplication1.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
+            // Find the application-specific user
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
 
+            // Find the IdentityUser associated with the application user
+            var identityUser = await _userManager.FindByEmailAsync(user.Email);
+            if (identityUser == null)
+            {
+                return NotFound();
+            }
+
+            // Remove the IdentityUser
+            var result = await _userManager.DeleteAsync(identityUser);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            // Remove the application-specific user
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
 
