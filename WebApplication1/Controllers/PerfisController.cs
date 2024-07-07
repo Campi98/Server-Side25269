@@ -26,11 +26,13 @@ namespace dWeb2024.Controllers
             return await _context.Perfis.ToListAsync();
         }
 
-        // GET: api/Perfis/5
+
+
+        // GET: api/perfis/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Perfil>> GetPerfil(int id)
         {
-            var perfil = await _context.Perfis.FindAsync(id);
+            var perfil = await _context.Perfis.FirstOrDefaultAsync(p => p.ID_do_User == id);
 
             if (perfil == null)
             {

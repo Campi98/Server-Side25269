@@ -60,9 +60,9 @@ namespace WebApplication1.Controllers
         [HttpGet("status")]
         public IActionResult Status()
         {
-            var teste123 = _signInManager.IsSignedIn(User);
             var isAuthenticated = User.Identity != null && User.Identity.IsAuthenticated;
-            return Ok(new { isAuthenticated });
+            var email = isAuthenticated ? User.Identity : null;
+            return Ok(new { isAuthenticated, email });
         }
 
     }
