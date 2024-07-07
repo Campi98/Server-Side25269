@@ -37,12 +37,22 @@ builder.Services.AddCors(options =>
             .AllowCredentials());
 });
 
-// Isto é necessário?
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.Name = ".AspNetCore.Identity.Application";
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
+    options.SlidingExpiration = true;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    options.Cookie.SameSite = SameSiteMode.None;
+
+
 });
+
+
 
 var app = builder.Build();
 
@@ -63,6 +73,17 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseCors("AllowSpecificOrigins");
+
+
+
+var cookiePolicyOptions = new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.None,
+    HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always,
+    Secure = CookieSecurePolicy.Always,
+};
+
+app.UseCookiePolicy(cookiePolicyOptions);
 
 app.UseAuthentication();
 app.UseAuthorization();

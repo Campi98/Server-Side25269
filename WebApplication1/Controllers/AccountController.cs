@@ -24,23 +24,23 @@ namespace WebApplication1.Controllers
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user == null)
             {
-                return Unauthorized();
+                return Unauthorized(new { message = "Invalid credentials" });
             }
 
             var result = await _signInManager.PasswordSignInAsync(user, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
             if (!result.Succeeded)
             {
-                return Unauthorized();
+                return Unauthorized(new { message = "Invalid credentials" });
             }
 
-            return Ok();
+            return Ok(new { message = "Login successful" });
         }
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return Ok();
+            return Ok(new { message = "Logout successful" });
         }
 
         [HttpPost("register")]
@@ -54,7 +54,16 @@ namespace WebApplication1.Controllers
                 return BadRequest(result.Errors);
             }
 
-            return Ok();
+            return Ok(new { message = "Registration successful" });
         }
+
+        [HttpGet("status")]
+        public IActionResult Status()
+        {
+            var teste123 = _signInManager.IsSignedIn(User);
+            var isAuthenticated = User.Identity != null && User.Identity.IsAuthenticated;
+            return Ok(new { isAuthenticated });
+        }
+
     }
 }
