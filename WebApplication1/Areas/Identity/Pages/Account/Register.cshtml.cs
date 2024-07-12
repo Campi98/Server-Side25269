@@ -24,7 +24,7 @@ namespace WebApplication1.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<User> _signInManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly IUserStore<User> _userStore;
         private readonly IUserEmailStore<User> _emailStore;
@@ -34,7 +34,7 @@ namespace WebApplication1.Areas.Identity.Pages.Account
         public RegisterModel(
             UserManager<User> userManager,
             IUserStore<User> userStore,
-            SignInManager<User> signInManager,
+            SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -141,7 +141,7 @@ namespace WebApplication1.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        //await _signInManager.SignInAsync(IdentityUser, isPersistent: false);
                         return LocalRedirect(returnUrl);
                     }
                 }
