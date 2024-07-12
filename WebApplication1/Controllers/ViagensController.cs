@@ -41,6 +41,21 @@ namespace dWeb2024.Controllers
             return viagem;
         }
 
+
+        // GET: api/Viagens/5
+        [HttpGet("name/{nome}")]
+        public async Task<ActionResult<IEnumerable<Viagem>>> GetViagemByDestino(string nome)
+        {
+            var viagem = _context.Viagens.Where(x => x.Destino == nome).ToList();
+
+            if (viagem == null)
+            {
+                return NotFound();
+            }
+
+            return viagem;
+        }
+
         // POST: api/Viagens
         [HttpPost]
         public async Task<ActionResult<Viagem>> PostViagem([FromBody] CreateViagemDto createViagemDto)
