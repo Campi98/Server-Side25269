@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApplication1.Data;
 using WebApplication1.Models;
@@ -95,6 +96,14 @@ namespace WebApplication1.Controllers
 
             _context.Perfis.Add(perfil);
             await _context.SaveChangesAsync();
+
+
+            var teste1 = await _userManager.FindByEmailAsync(createUserDto.Email);
+            var claims = new List<Claim>
+                    {
+                        new Claim("user-tipo", createUserDto.Tipo)
+                    };
+            await _userManager.AddClaimsAsync(teste1, claims);
 
             return CreatedAtAction(nameof(GetUser), new { id = user.ID_do_User }, user);
         }

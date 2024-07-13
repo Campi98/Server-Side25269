@@ -1,21 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApplication1.Data;
 using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize(Policy = "AdminOnly")]
     public class UsersMvcController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UsersMvcController(ApplicationDbContext context)
+        public UsersMvcController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Users
@@ -99,6 +105,11 @@ namespace WebApplication1.Controllers
                 {
                     _context.Update(user);
                     await _context.SaveChangesAsync();
+                    var identityUser = await _userManager.FindByEmailAsync(user.Email);
+                    var newClaim = new Claim("user-tipo", user.Tipo);
+                    var oldClaim = (await _userManager.GetClaimsAsync(identityUser)).FirstOrDefault(x => x.Type == "user-tipo");
+                    await _userManager.ReplaceClaimAsync(identityUser, oldClaim, newClaim);
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {

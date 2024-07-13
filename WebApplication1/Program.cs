@@ -6,6 +6,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Text.Json.Serialization;
 using WebApplication1.Models;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,15 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // https://stackoverflow.com/questions/57177109/how-do-i-dependency-inject-signinmanager
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c => c.Type == "user-tipo" && c.Value == "Admin")));
+
+});
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

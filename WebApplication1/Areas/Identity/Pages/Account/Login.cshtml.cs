@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using WebApplication1.Models;
 using WebApplication1.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace WebApplication1.Areas.Identity.Pages.Account
 {
@@ -24,13 +26,15 @@ namespace WebApplication1.Areas.Identity.Pages.Account
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ApplicationDbContext context, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ApplicationDbContext context, ILogger<LoginModel> logger, UserManager<IdentityUser> userManager)
         {
             _signInManager = signInManager;
             _context = context;
             _logger = logger;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -117,8 +121,8 @@ namespace WebApplication1.Areas.Identity.Pages.Account
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                var myUser = _context.Users.Where(u => u.Email == Input.Email).FirstOrDefault();
-                if (result.Succeeded && myUser.Tipo=="Admin")
+                var myUser = _context.Users.FirstOrDefault(u => u.Email == Input.Email);
+                if (result.Succeeded && myUser?.Tipo=="Admin")   
                 {
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);

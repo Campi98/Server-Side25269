@@ -6,9 +6,6 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -16,7 +13,7 @@
                 @Html.DisplayNameFor(model => model.Fotografia_do_User)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Interesses_de_Viagem)
+                @Html.DisplayNameFor(model => model.User)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Destinos_Favoritos)
@@ -25,7 +22,7 @@
                 @Html.DisplayNameFor(model => model.Nivel_de_Experiencia_em_Viagens)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User)
+                @Html.DisplayNameFor(model => model.Interesses_de_Viagem)
             </th>
             <th></th>
         </tr>
@@ -38,7 +35,7 @@
                     <img src="data:image/png;base64,@item.Fotografia_do_User" alt="User Photo" style="width:100px; height:100px;" />
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Interesses_de_Viagem)
+                    @Html.DisplayFor(modelItem => item.User.Nome)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Destinos_Favoritos)
@@ -47,7 +44,7 @@
                     @Html.DisplayFor(modelItem => item.Nivel_de_Experiencia_em_Viagens)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.User.Nome)
+                    @Html.DisplayFor(modelItem => item.Interesses_de_Viagem)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.ID_do_Perfil">Edit</a> |
