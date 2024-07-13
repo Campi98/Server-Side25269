@@ -19,5 +19,6 @@ namespace WebApplication1.Models
 
         public ICollection<Alojamento> Alojamentos { get; set; } = new HashSet<Alojamento>();
         public ICollection<Grupo_de_Viagem> Grupos { get; set; } = new HashSet<Grupo_de_Viagem>();
+        public ICollection<ViagemGrupo> ViagemGrupos { get; set; } = new HashSet<ViagemGrupo>();
     }
 }

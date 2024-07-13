@@ -18,6 +18,7 @@ namespace WebApplication1.Data
         public DbSet<Mensagem> Mensagens { get; set; }
         public DbSet<Avaliacao> Avaliacoes { get; set; }
         public DbSet<Alojamento> Alojamentos { get; set; }
+        public DbSet<ViagemGrupo> ViagemGrupos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -67,14 +68,19 @@ namespace WebApplication1.Data
                 .WithOne(u => u.Grupo)
                 .HasForeignKey(u => u.ID_do_Grupo);
 
-            // Viagem - Grupo_de_Viagem (N:N)
-            modelBuilder.Entity<Viagem>()
-                .HasMany(v => v.Grupos)
-                .WithMany(g => g.Viagens)
-                .UsingEntity<Dictionary<string, object>>(
-                    "ViagemGrupo",
-                    j => j.HasOne<Grupo_de_Viagem>().WithMany().HasForeignKey("ID_do_Grupo"),
-                    j => j.HasOne<Viagem>().WithMany().HasForeignKey("ID_da_Viagem"));
+            // ViagemGrupo (N:N)
+            modelBuilder.Entity<ViagemGrupo>()
+                .HasKey(vg => new { vg.ViagemId, vg.GrupoDeViagemId });
+
+            modelBuilder.Entity<ViagemGrupo>()
+                .HasOne(vg => vg.Viagem)
+                .WithMany(v => v.ViagemGrupos)
+                .HasForeignKey(vg => vg.ViagemId);
+
+            modelBuilder.Entity<ViagemGrupo>()
+                .HasOne(vg => vg.GrupoDeViagem)
+                .WithMany(g => g.ViagemGrupos)
+                .HasForeignKey(vg => vg.GrupoDeViagemId);
         }
         public DbSet<WebApplication1.Models.Imagem> Imagem { get; set; } = default!;
     }
