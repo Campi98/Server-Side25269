@@ -4,38 +4,39 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Viagem Grupo N:M</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Criar nova relação</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Viagem)
+                @Html.DisplayNameFor(model => model.Viagem.Destino)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.GrupoDeViagem)
+                @Html.DisplayNameFor(model => model.GrupoDeViagem.Nome_do_Grupo)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Viagem.ID_da_Viagem)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GrupoDeViagem.ID_do_Grupo)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Viagem.Destino)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GrupoDeViagem.Nome_do_Grupo)
+                </td>
+                <td>
+                    @Html.ActionLink("Editar", "Edit", new { viagemId = item.ViagemId, grupoDeViagemId = item.GrupoDeViagemId }) |
+                    @Html.ActionLink("Detalhes", "Details", new { viagemId = item.ViagemId, grupoDeViagemId = item.GrupoDeViagemId }) |
+                    @Html.ActionLink("Apagar", "Delete", new { viagemId = item.ViagemId, grupoDeViagemId = item.GrupoDeViagemId })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

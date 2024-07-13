@@ -4,7 +4,7 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Editar ViagemGrupo</h1>
 
 <h4>ViagemGrupo</h4>
 <hr />
@@ -15,16 +15,26 @@
             <input type="hidden" asp-for="ViagemId" />
             <input type="hidden" asp-for="GrupoDeViagemId" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label asp-for="Viagem.Destino" class="control-label"></label>
+                <input type="text" class="form-control" value="@Model.Viagem.Destino" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="GrupoDeViagem.Nome_do_Grupo" class="control-label"></label>
+                <input type="text" class="form-control" value="@Model.GrupoDeViagem.Nome_do_Grupo" readonly />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Guardar alterações" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Voltar à lista</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

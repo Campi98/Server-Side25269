@@ -26,10 +26,10 @@ namespace WebApplication1.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: ViagemGrupos/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: ViagemGrupos/Details
+        public async Task<IActionResult> Details(int? viagemId, int? grupoDeViagemId)
         {
-            if (id == null)
+            if (viagemId == null || grupoDeViagemId == null)
             {
                 return NotFound();
             }
@@ -37,7 +37,7 @@ namespace WebApplication1.Controllers
             var viagemGrupo = await _context.ViagemGrupos
                 .Include(v => v.GrupoDeViagem)
                 .Include(v => v.Viagem)
-                .FirstOrDefaultAsync(m => m.ViagemId == id);
+                .FirstOrDefaultAsync(m => m.ViagemId == viagemId && m.GrupoDeViagemId == grupoDeViagemId);
             if (viagemGrupo == null)
             {
                 return NotFound();
@@ -49,14 +49,12 @@ namespace WebApplication1.Controllers
         // GET: ViagemGrupos/Create
         public IActionResult Create()
         {
-            ViewData["GrupoDeViagemId"] = new SelectList(_context.GruposDeViagem, "ID_do_Grupo", "ID_do_Grupo");
-            ViewData["ViagemId"] = new SelectList(_context.Viagens, "ID_da_Viagem", "ID_da_Viagem");
+            ViewData["GrupoDeViagemId"] = new SelectList(_context.GruposDeViagem, "ID_do_Grupo", "Nome_do_Grupo");
+            ViewData["ViagemId"] = new SelectList(_context.Viagens, "ID_da_Viagem", "Destino");
             return View();
         }
 
         // POST: ViagemGrupos/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ViagemId,GrupoDeViagemId")] ViagemGrupo viagemGrupo)
@@ -67,37 +65,38 @@ namespace WebApplication1.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GrupoDeViagemId"] = new SelectList(_context.GruposDeViagem, "ID_do_Grupo", "ID_do_Grupo", viagemGrupo.GrupoDeViagemId);
-            ViewData["ViagemId"] = new SelectList(_context.Viagens, "ID_da_Viagem", "ID_da_Viagem", viagemGrupo.ViagemId);
+            ViewData["GrupoDeViagemId"] = new SelectList(_context.GruposDeViagem, "ID_do_Grupo", "Nome_do_Grupo", viagemGrupo.GrupoDeViagemId);
+            ViewData["ViagemId"] = new SelectList(_context.Viagens, "ID_da_Viagem", "Destino", viagemGrupo.ViagemId);
             return View(viagemGrupo);
         }
 
-        // GET: ViagemGrupos/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: ViagemGrupos/Edit
+        public async Task<IActionResult> Edit(int? viagemId, int? grupoDeViagemId)
         {
-            if (id == null)
+            if (viagemId == null || grupoDeViagemId == null)
             {
                 return NotFound();
             }
 
-            var viagemGrupo = await _context.ViagemGrupos.FindAsync(id);
+            var viagemGrupo = await _context.ViagemGrupos
+                .Include(vg => vg.Viagem)
+                .Include(vg => vg.GrupoDeViagem)
+                .FirstOrDefaultAsync(vg => vg.ViagemId == viagemId && vg.GrupoDeViagemId == grupoDeViagemId);
             if (viagemGrupo == null)
             {
                 return NotFound();
             }
-            ViewData["GrupoDeViagemId"] = new SelectList(_context.GruposDeViagem, "ID_do_Grupo", "ID_do_Grupo", viagemGrupo.GrupoDeViagemId);
-            ViewData["ViagemId"] = new SelectList(_context.Viagens, "ID_da_Viagem", "ID_da_Viagem", viagemGrupo.ViagemId);
+            ViewData["GrupoDeViagemId"] = new SelectList(_context.GruposDeViagem, "ID_do_Grupo", "Nome_do_Grupo", viagemGrupo.GrupoDeViagemId);
+            ViewData["ViagemId"] = new SelectList(_context.Viagens, "ID_da_Viagem", "Destino", viagemGrupo.ViagemId);
             return View(viagemGrupo);
         }
 
-        // POST: ViagemGrupos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: ViagemGrupos/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ViagemId,GrupoDeViagemId")] ViagemGrupo viagemGrupo)
+        public async Task<IActionResult> Edit(int viagemId, int grupoDeViagemId, [Bind("ViagemId,GrupoDeViagemId")] ViagemGrupo viagemGrupo)
         {
-            if (id != viagemGrupo.ViagemId)
+            if (viagemId != viagemGrupo.ViagemId || grupoDeViagemId != viagemGrupo.GrupoDeViagemId)
             {
                 return NotFound();
             }
@@ -111,7 +110,7 @@ namespace WebApplication1.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ViagemGrupoExists(viagemGrupo.ViagemId))
+                    if (!ViagemGrupoExists(viagemGrupo.ViagemId, viagemGrupo.GrupoDeViagemId))
                     {
                         return NotFound();
                     }
@@ -122,15 +121,15 @@ namespace WebApplication1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GrupoDeViagemId"] = new SelectList(_context.GruposDeViagem, "ID_do_Grupo", "ID_do_Grupo", viagemGrupo.GrupoDeViagemId);
-            ViewData["ViagemId"] = new SelectList(_context.Viagens, "ID_da_Viagem", "ID_da_Viagem", viagemGrupo.ViagemId);
+            ViewData["GrupoDeViagemId"] = new SelectList(_context.GruposDeViagem, "ID_do_Grupo", "Nome_do_Grupo", viagemGrupo.GrupoDeViagemId);
+            ViewData["ViagemId"] = new SelectList(_context.Viagens, "ID_da_Viagem", "Destino", viagemGrupo.ViagemId);
             return View(viagemGrupo);
         }
 
-        // GET: ViagemGrupos/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: ViagemGrupos/Delete
+        public async Task<IActionResult> Delete(int? viagemId, int? grupoDeViagemId)
         {
-            if (id == null)
+            if (viagemId == null || grupoDeViagemId == null)
             {
                 return NotFound();
             }
@@ -138,7 +137,7 @@ namespace WebApplication1.Controllers
             var viagemGrupo = await _context.ViagemGrupos
                 .Include(v => v.GrupoDeViagem)
                 .Include(v => v.Viagem)
-                .FirstOrDefaultAsync(m => m.ViagemId == id);
+                .FirstOrDefaultAsync(m => m.ViagemId == viagemId && m.GrupoDeViagemId == grupoDeViagemId);
             if (viagemGrupo == null)
             {
                 return NotFound();
@@ -147,12 +146,12 @@ namespace WebApplication1.Controllers
             return View(viagemGrupo);
         }
 
-        // POST: ViagemGrupos/Delete/5
+        // POST: ViagemGrupos/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int viagemId, int grupoDeViagemId)
         {
-            var viagemGrupo = await _context.ViagemGrupos.FindAsync(id);
+            var viagemGrupo = await _context.ViagemGrupos.FindAsync(viagemId, grupoDeViagemId);
             if (viagemGrupo != null)
             {
                 _context.ViagemGrupos.Remove(viagemGrupo);
@@ -162,9 +161,9 @@ namespace WebApplication1.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ViagemGrupoExists(int id)
+        private bool ViagemGrupoExists(int viagemId, int grupoDeViagemId)
         {
-            return _context.ViagemGrupos.Any(e => e.ViagemId == id);
+            return _context.ViagemGrupos.Any(e => e.ViagemId == viagemId && e.GrupoDeViagemId == grupoDeViagemId);
         }
     }
 }
