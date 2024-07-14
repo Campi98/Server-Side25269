@@ -15,12 +15,14 @@
             <input type="hidden" asp-for="ViagemId" />
             <input type="hidden" asp-for="GrupoDeViagemId" />
             <div class="form-group">
-                <label asp-for="Viagem.Destino" class="control-label"></label>
-                <input type="text" class="form-control" value="@Model.Viagem.Destino" readonly />
+                <label asp-for="ViagemId" class="control-label"></label>
+                <select asp-for="ViagemId" class="form-control" asp-items="ViewBag.ViagemId"></select>
+                <span asp-validation-for="ViagemId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="GrupoDeViagem.Nome_do_Grupo" class="control-label"></label>
-                <input type="text" class="form-control" value="@Model.GrupoDeViagem.Nome_do_Grupo" readonly />
+                <label asp-for="GrupoDeViagemId" class="control-label"></label>
+                <select asp-for="GrupoDeViagemId" class="form-control" asp-items="ViewBag.GrupoDeViagemId"></select>
+                <span asp-validation-for="GrupoDeViagemId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Guardar alterações" class="btn btn-primary" />

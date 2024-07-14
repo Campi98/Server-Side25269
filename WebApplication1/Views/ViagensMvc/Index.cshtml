@@ -42,9 +42,9 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fotografia_relacionada_com_a_viagem)
-            </td>
+                <td>
+                    <img src="data:image/png;base64,@item.Fotografia_relacionada_com_a_viagem" alt="Viagem Photo" style="width:100px; height:100px;" />
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Destino)
             </td>

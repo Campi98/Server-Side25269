@@ -21,6 +21,6 @@ namespace WebApplication1.Models
 
         [ForeignKey("Grupo_de_Viagem")]
         public int? ID_do_Grupo { get; set; }  // Chave estrangeira para Grupo_de_Viagem
-        public Grupo_de_Viagem? Grupo { get; set; }  // Propriedade de navegação
+        public Grupo_de_Viagem? Grupo { get; set; } 
     }
 }
